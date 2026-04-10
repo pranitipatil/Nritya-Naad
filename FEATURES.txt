@@ -123,7 +123,7 @@ Expected Output:
 
 * Vertical video feed
 * Smooth scrolling
-* Like/comment (optional)
+* Like/comment
 
 ---
 
