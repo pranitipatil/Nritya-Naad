@@ -24,6 +24,7 @@ const CARD_BLURBS = {
   gallery: "Browse classical dance form imagery — eight Sangeet Natak Akademi traditions with notes and credits.",
   academy: "Discover dance & music academies near you — search, filter by city, call or open maps.",
   chatbot: "AI cultural Q&A — add GROQ_API_KEY (free) or OpenAI/Gemini in backend/.env.",
+  mindmap: "Visual map of Indian classical art lineages — dance, music, and śāstra.",
 };
 
 export default function FeatureCard({ feature }) {

@@ -1,0 +1,44 @@
+{
+  "pillars": [
+    {
+      "id": "dance",
+      "title": "Classical dance",
+      "subtitle": "Sangeet Natak Akademi traditions",
+      "nodes": [
+        { "id": "bn", "label": "Bharatanatyam", "hint": "Tamil Nadu · temple & concert nrtta–abhinaya" },
+        { "id": "kathak", "label": "Kathak", "hint": "North India · tabla, chakkars, gharanas" },
+        { "id": "kathakali", "label": "Kathakali", "hint": "Kerala · costumed dance-drama" },
+        { "id": "odissi", "label": "Odissi", "hint": "Odisha · tribhangi, temple sculpture line" },
+        { "id": "kuchipudi", "label": "Kuchipudi", "hint": "Andhra / Telangana · jatis & natya" },
+        { "id": "manipuri", "label": "Manipuri", "hint": "Manipur · lasya, ensemble & ritual roots" },
+        { "id": "mohini", "label": "Mohiniyattam", "hint": "Kerala · lasya, swaying repose" },
+        { "id": "sattriya", "label": "Sattriya", "hint": "Assam · sattra, Vaishnava repertoire" }
+      ]
+    },
+    {
+      "id": "music",
+      "title": "Classical music",
+      "subtitle": "Two great systems",
+      "nodes": [
+        { "id": "hindustani", "label": "Hindustani", "hint": "North · ragas, khayal, dhrupad, gharanas" },
+        { "id": "carnatic", "label": "Carnatic", "hint": "South · kriti, ragam–tanam–pallavi, talas" },
+        { "id": "raga", "label": "Rāga", "hint": "Melodic framework · gamaka, time, mood" },
+        { "id": "tala", "label": "Tāla", "hint": "Rhythmic cycle · Carnatic & Hindustani solkattu / theka" },
+        { "id": "swara", "label": "Swara", "hint": "Solfege · Sa Ri Ga Ma… training & rāga" },
+        { "id": "instr", "label": "Instruments", "hint": "Veena, violin, sitar, sarod, mridangam, tabla…" }
+      ]
+    },
+    {
+      "id": "theory",
+      "title": "Texts & pedagogy",
+      "subtitle": "Lineages of knowledge",
+      "nodes": [
+        { "id": "natya", "label": "Nāṭya Śāstra", "hint": "Drama, dance, music theory · rasa, bhāva" },
+        { "id": "abhi", "label": "Abhinaya Darpaṇa", "hint": "Hastas, body · practical śāstra for dancers" },
+        { "id": "gharana", "label": "Gharānā", "hint": "Hindustani & Kathak stylistic schools" },
+        { "id": "bani", "label": "Bāṇi / style", "hint": "Carnatic & dance stylistic lineages" },
+        { "id": "guru", "label": "Guru–śiṣya", "hint": "Oral transmission · core to both dance & music" }
+      ]
+    }
+  ]
+}

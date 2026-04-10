@@ -5,6 +5,7 @@ import UserStories from "../components/UserStories";
 import DanceGallery from "../components/DanceGallery";
 import AcademyListing from "../components/AcademyListing";
 import CulturalChatbot from "../components/CulturalChatbot";
+import ArtLineageMindMap from "../components/ArtLineageMindMap";
 
 const FEATURE_THEMES = {
   mudra:      { color: "#C2185B", bg: "rgba(194,24,91,0.08)", gradient: "linear-gradient(135deg, #C2185B, #880E4F)", icon: "🤲" },
@@ -30,7 +31,11 @@ export default function FeaturePage() {
   const feature = features.find((f) => f.id === id);
   const theme = FEATURE_THEMES[id] || FEATURE_THEMES.mudra;
   const contentMaxWidth =
-    id === "gallery" ? "1200px" : id === "academy" || id === "chatbot" ? "900px" : "860px";
+    id === "gallery" || id === "mindmap"
+      ? "1200px"
+      : id === "academy" || id === "chatbot"
+        ? "900px"
+        : "860px";
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -120,6 +125,10 @@ export default function FeaturePage() {
                 (free at console.groq.com) or <code style={{ fontSize: "13px", background: theme.bg, padding: "2px 6px", borderRadius: "6px" }}>OPENAI_API_KEY</code> /{" "}
                 <code style={{ fontSize: "13px", background: theme.bg, padding: "2px 6px", borderRadius: "6px" }}>GEMINI_API_KEY</code> in <code style={{ fontSize: "13px", background: theme.bg, padding: "2px 6px", borderRadius: "6px" }}>backend/.env</code> — restart the server after saving.
               </>
+            ) : id === "mindmap" ? (
+              <>
+                A <strong style={{ color: theme.color, fontWeight: 500 }}>visual map</strong> of classical dance forms, music systems, and foundational texts — tap nodes to explore lineage hints.
+              </>
             ) : (
               <>
                 This is your dedicated workspace for the <strong style={{ color: theme.color, fontWeight: 500 }}>{feature?.name}</strong> module.
@@ -141,6 +150,10 @@ export default function FeaturePage() {
         ) : id === "chatbot" ? (
           <div style={{ marginTop: "8px", width: "100%" }}>
             <CulturalChatbot theme={theme} />
+          </div>
+        ) : id === "mindmap" ? (
+          <div style={{ marginTop: "8px", width: "100%" }}>
+            <ArtLineageMindMap theme={theme} />
           </div>
         ) : id === "stories" ? (
           <div style={{ marginTop: "32px", width: "100%", display: "flex", justifyContent: "center" }}>
