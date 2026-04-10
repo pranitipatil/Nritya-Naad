@@ -1,6 +1,11 @@
+import React from 'react';
+import { useParams, Link } from 'react-router-dom';
 import MudraDetection from "../components/MudraDetection";
-import Academy from "../features/Academy";
 import UserStories from "../components/UserStories";
+import Navbar from '../components/Navbar';
+import features from '../data/features.json';
+import IndiaMap from "../features/IndiaMap";
+import Academy from "../features/Academy";
 
 const FEATURE_THEMES = {
   mudra: { color: "#C2185B", bg: "rgba(194,24,91,0.08)", gradient: "linear-gradient(135deg, #C2185B, #880E4F)", icon: "🤲" },
@@ -21,6 +26,10 @@ const FEATURE_THEMES = {
   swaras: { color: "#FF6B00", bg: "rgba(255,107,0,0.08)", gradient: "linear-gradient(135deg, #FF6B00, #E85D04)", icon: "🎶" },
 };
 
+const FEATURE_COMPONENTS = {
+  map: IndiaMap,
+};
+
 export default function FeaturePage() {
   const { id } = useParams();
   const feature = features.find((f) => f.id === id);
@@ -34,27 +43,24 @@ export default function FeaturePage() {
 
         {/* Breadcrumb */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "36px" }}>
-          <Link to="/features" style={{
-            textDecoration: "none",
-            fontSize: "13px",
-            color: "#8B6452",
-            transition: "color 0.2s",
-          }}>← All Features</Link>
+          <Link to="/features" style={{ textDecoration: "none", fontSize: "13px", color: "#8B6452" }}>
+            ← All Features
+          </Link>
           <span style={{ color: "#cbb", fontSize: "13px" }}>/</span>
-          <span style={{ fontSize: "13px", color: theme.color, fontWeight: 500 }}>{feature?.name}</span>
+          <span style={{ fontSize: "13px", color: theme.color, fontWeight: 500 }}>
+            {feature?.name}
+          </span>
         </div>
 
-        {/* Feature header card */}
+        {/* Header */}
         <div style={{
           background: "#fff",
           borderRadius: "24px",
           padding: "40px",
-          border: `1.5px solid rgba(0,0,0,0.06)`,
+          border: "1.5px solid rgba(0,0,0,0.06)",
           marginBottom: "24px",
           position: "relative",
-          overflow: "hidden",
         }}>
-          {/* Gradient accent bar */}
           <div style={{
             position: "absolute",
             top: 0, left: 0, right: 0,
@@ -63,7 +69,7 @@ export default function FeaturePage() {
             borderRadius: "24px 24px 0 0",
           }} />
 
-          <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "20px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
             <div style={{
               width: "68px", height: "68px",
               borderRadius: "18px",
@@ -76,13 +82,12 @@ export default function FeaturePage() {
             }}>
               {theme.icon}
             </div>
+
             <div>
               <h1 style={{
-                fontFamily: "'Playfair Display', serif",
                 fontSize: "32px",
                 fontWeight: 700,
                 color: theme.color,
-                marginBottom: "4px",
               }}>
                 {feature?.name}
               </h1>
@@ -91,80 +96,31 @@ export default function FeaturePage() {
               </p>
             </div>
           </div>
-
-          <p style={{
-            fontSize: "15px",
-            color: "#5D3A1A",
-            lineHeight: 1.7,
-            fontWeight: 300,
-          }}>
-            This is your dedicated workspace for the <strong style={{ color: theme.color, fontWeight: 500 }}>{feature?.name}</strong> module.
-            Build your feature UI and logic here, with full access to the NrityaNaad design system and theme.
-          </p>
         </div>
 
-        {/* Implementation area */}
-
+        {/* Implementation */}
         <div style={{
           borderRadius: "24px",
           padding: "60px 40px",
           border: `2px dashed ${theme.color}40`,
           background: theme.bg,
           textAlign: "center",
-          position: "relative",
-          overflow: "hidden",
         }}>
           {id === "mudra" ? (
             <MudraDetection />
           ) : (
             <>
-              <div style={{ fontSize: "48px", marginBottom: "16px" }}>🚀</div>
-              <h2 style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: "22px",
-                fontWeight: 700,
-                color: theme.color,
-                marginBottom: "10px",
-              }}>
-                Implementation Area
-              </h2>
-              <p style={{ fontSize: "14px", color: "#8B6452", fontWeight: 300 }}>
-                Drop your feature components and logic right here
-              </p>
+              <div style={{ fontSize: "48px" }}>🚀</div>
+              <h2>Implementation Area</h2>
             </>
           )}
         </div>
 
-        {id === "stories" ? (
-          <div style={{ marginTop: "32px", width: "100%", display: "flex", justifyContent: "center" }}>
+        {id === "stories" && (
+          <div style={{ marginTop: "32px" }}>
             <UserStories theme={theme} />
           </div>
-        ) : (
-          <div style={{
-            borderRadius: "24px",
-            padding: "60px 40px",
-            border: `2px dashed ${theme.color}40`,
-            background: theme.bg,
-            textAlign: "center",
-            position: "relative",
-            overflow: "hidden",
-          }}>
-            <div style={{ fontSize: "48px", marginBottom: "16px" }}>🚀</div>
-            <h2 style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: "22px",
-              fontWeight: 700,
-              color: theme.color,
-              marginBottom: "10px",
-            }}>
-              Implementation Area
-            </h2>
-            <p style={{ fontSize: "14px", color: "#8B6452", fontWeight: 300 }}>
-              Drop your feature components and logic right here
-            </p>
-          </div>
         )}
-
 
       </div>
     </div>
