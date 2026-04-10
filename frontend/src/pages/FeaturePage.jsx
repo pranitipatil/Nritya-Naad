@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import features from "../data/features.json";
 import Navbar from "../components/Navbar";
 
@@ -50,6 +50,228 @@ const QUIZ_QUESTIONS = [
   { id: 10, question: "How many classical dance forms are recognised by the Sangeet Natak Akademi?", options: ["6", "8", "10", "12"], answer: "8", explanation: "The Sangeet Natak Akademi recognises 8 classical dance forms: Bharatanatyam, Kathak, Odissi, Kathakali, Kuchipudi, Manipuri, Mohiniyattam, and Sattriya." },
 ];
 
+// ── Karaoke Data ────────────────────────────────────────────────────
+const KARAOKE_SONGS = [
+  {
+    id: 1,
+    title: "Vande Mataram",
+    composer: "Bankim Chandra Chatterjee",
+    raga: "Desh",
+    duration: 120,
+    emoji: "🪷",
+    lines: [
+      { text: "Vande Mataram", start: 0, end: 8 },
+      { text: "Sujalam, suphalam, malayaja sheetalam", start: 8, end: 18 },
+      { text: "Shasyashyamalam, Mataram", start: 18, end: 26 },
+      { text: "Shubhrajyotsna pulakitayaminim", start: 26, end: 36 },
+      { text: "Phullakusumita drumadala shobhinim", start: 36, end: 46 },
+      { text: "Suhasinim sumadhura bhashinim", start: 46, end: 56 },
+      { text: "Sukhadam varadam Mataram", start: 56, end: 66 },
+      { text: "Vande Mataram", start: 66, end: 75 },
+    ],
+  },
+  {
+    id: 2,
+    title: "Raghupati Raghava Raja Ram",
+    composer: "Traditional Bhajan",
+    raga: "Bhairavi",
+    duration: 90,
+    emoji: "🙏",
+    lines: [
+      { text: "Raghupati Raghava Raja Ram", start: 0, end: 8 },
+      { text: "Patita Pavana Sita Ram", start: 8, end: 16 },
+      { text: "Sita Ram, Sita Ram", start: 16, end: 24 },
+      { text: "Bhaj pyare tu Sita Ram", start: 24, end: 32 },
+      { text: "Ishwar Allah tero naam", start: 32, end: 40 },
+      { text: "Sab ko sanmati de Bhagwan", start: 40, end: 50 },
+      { text: "Raghupati Raghava Raja Ram", start: 50, end: 58 },
+      { text: "Patita Pavana Sita Ram", start: 58, end: 66 },
+    ],
+  },
+  {
+    id: 3,
+    title: "Om Namah Shivaya",
+    composer: "Traditional Mantra",
+    raga: "Yaman",
+    duration: 80,
+    emoji: "🔱",
+    lines: [
+      { text: "Om Namah Shivaya", start: 0, end: 8 },
+      { text: "Om Namah Shivaya", start: 8, end: 16 },
+      { text: "Shiva Shiva Shambho", start: 16, end: 24 },
+      { text: "Mahadeva Shambho", start: 24, end: 32 },
+      { text: "Om Namah Shivaya", start: 32, end: 40 },
+      { text: "Har Har Mahadeva", start: 40, end: 48 },
+      { text: "Shiva Shiva Shambho", start: 48, end: 56 },
+      { text: "Om Namah Shivaya", start: 56, end: 64 },
+    ],
+  },
+  {
+    id: 4,
+    title: "Jai Ho",
+    composer: "A.R. Rahman",
+    raga: "Khamaj",
+    duration: 100,
+    emoji: "🌟",
+    lines: [
+      { text: "Jai ho, Jai ho, Jai ho", start: 0, end: 8 },
+      { text: "Jai ho, Jai ho, Jai ho", start: 8, end: 16 },
+      { text: "Roja, Roja, Roja", start: 16, end: 24 },
+      { text: "Aaja aaja aaja", start: 24, end: 32 },
+      { text: "Jai ho, Jai ho", start: 32, end: 40 },
+      { text: "Vande Vande Vande", start: 40, end: 50 },
+      { text: "Jai ho, Jai ho, Jai ho", start: 50, end: 60 },
+      { text: "Jai ho", start: 60, end: 68 },
+    ],
+  },
+];
+
+// ── Karaoke Component ───────────────────────────────────────────────
+function Karaoke({ theme }) {
+  const [selectedSong, setSelectedSong] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+  const intervalRef = useRef(null);
+
+  const currentLine = selectedSong
+    ? selectedSong.lines.findIndex(
+        (l, i) =>
+          elapsed >= l.start &&
+          (i === selectedSong.lines.length - 1 || elapsed < selectedSong.lines[i + 1].start)
+      )
+    : -1;
+
+  useEffect(() => {
+    if (isPlaying) {
+      intervalRef.current = setInterval(() => {
+        setElapsed((e) => {
+          if (e >= selectedSong.duration) {
+            setIsPlaying(false);
+            return 0;
+          }
+          return e + 0.5;
+        });
+      }, 500);
+    } else {
+      clearInterval(intervalRef.current);
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [isPlaying, selectedSong]);
+
+  const handleSelect = (song) => {
+    setSelectedSong(song);
+    setIsPlaying(false);
+    setElapsed(0);
+  };
+
+  const handlePlayPause = () => setIsPlaying((p) => !p);
+
+  const handleRestart = () => {
+    setElapsed(0);
+    setIsPlaying(false);
+  };
+
+  const formatTime = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+
+  const progress = selectedSong ? (elapsed / selectedSong.duration) * 100 : 0;
+
+  if (!selectedSong) {
+    return (
+      <div>
+        <p style={{ fontSize: "13px", color: "#8B6452", marginBottom: "20px" }}>
+          Choose a composition to sing along:
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "16px" }}>
+          {KARAOKE_SONGS.map((song) => (
+            <div
+              key={song.id}
+              onClick={() => handleSelect(song)}
+              style={{ background: "#fff", borderRadius: "16px", padding: "24px 20px", border: `1.5px solid ${theme.color}20`, cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s", position: "relative", overflow: "hidden" }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = `0 12px 32px ${theme.color}20`; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
+            >
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: theme.color, borderRadius: "16px 16px 0 0" }} />
+              <div style={{ fontSize: "36px", marginBottom: "12px" }}>{song.emoji}</div>
+              <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "16px", fontWeight: 700, color: theme.color, marginBottom: "4px" }}>{song.title}</h3>
+              <p style={{ fontSize: "12px", color: "#8B6452", marginBottom: "4px" }}>{song.composer}</p>
+              <p style={{ fontSize: "11px", color: "#aaa" }}>Raga: {song.raga} · {formatTime(song.duration)}</p>
+              <div style={{ marginTop: "14px", fontSize: "12px", color: theme.color, fontWeight: 500 }}>Sing along →</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {/* Back button */}
+      <button
+        onClick={() => { setSelectedSong(null); setIsPlaying(false); setElapsed(0); }}
+        style={{ background: "none", border: "none", cursor: "pointer", fontSize: "13px", color: "#8B6452", marginBottom: "20px", padding: 0 }}
+      >
+        ← Back to songs
+      </button>
+
+      {/* Song header */}
+      <div style={{ background: "#fff", borderRadius: "18px", padding: "24px 28px", border: `1.5px solid ${theme.color}20`, marginBottom: "20px", display: "flex", alignItems: "center", gap: "16px" }}>
+        <div style={{ fontSize: "40px" }}>{selectedSong.emoji}</div>
+        <div>
+          <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "20px", fontWeight: 700, color: theme.color, marginBottom: "2px" }}>{selectedSong.title}</h3>
+          <p style={{ fontSize: "13px", color: "#8B6452" }}>{selectedSong.composer} · Raga: {selectedSong.raga}</p>
+        </div>
+      </div>
+
+      {/* Lyrics display */}
+      <div style={{ background: "#fff", borderRadius: "18px", padding: "32px 28px", border: `1.5px solid ${theme.color}20`, marginBottom: "20px", minHeight: "220px" }}>
+        {selectedSong.lines.map((line, i) => (
+          <p
+            key={i}
+            style={{
+              fontFamily: "'Playfair Display', serif",
+              fontSize: i === currentLine ? "22px" : "16px",
+              fontWeight: i === currentLine ? 700 : 400,
+              color: i === currentLine ? theme.color : i < currentLine ? "#ccc" : "#5D3A1A",
+              marginBottom: "12px",
+              transition: "all 0.3s ease",
+              lineHeight: 1.5,
+            }}
+          >
+            {i === currentLine ? "🎤 " : ""}{line.text}
+          </p>
+        ))}
+      </div>
+
+      {/* Progress bar */}
+      <div style={{ marginBottom: "16px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#8B6452", marginBottom: "6px" }}>
+          <span>{formatTime(elapsed)}</span>
+          <span>{formatTime(selectedSong.duration)}</span>
+        </div>
+        <div style={{ height: "6px", borderRadius: "10px", background: "rgba(0,0,0,0.08)" }}>
+          <div style={{ height: "100%", borderRadius: "10px", background: theme.color, width: `${progress}%`, transition: "width 0.5s linear" }} />
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+        <button
+          onClick={handleRestart}
+          style={{ padding: "12px 24px", borderRadius: "24px", background: "#fff", border: `1.5px solid ${theme.color}30`, color: theme.color, fontSize: "14px", fontWeight: 500, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}
+        >
+          ↺ Restart
+        </button>
+        <button
+          onClick={handlePlayPause}
+          style={{ padding: "12px 32px", borderRadius: "24px", background: theme.color, border: "none", color: "#fff", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}
+        >
+          {isPlaying ? "⏸ Pause" : "▶ Sing Along"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Quiz Component ──────────────────────────────────────────────────
 function Quiz({ theme }) {
   const [current, setCurrent] = useState(0);
@@ -86,21 +308,14 @@ function Quiz({ theme }) {
   };
 
   const optionStyle = (option) => {
-    let bg = "#fff";
-    let border = "rgba(0,0,0,0.12)";
-    let color = "#5D3A1A";
+    let bg = "#fff", border = "rgba(0,0,0,0.12)", color = "#5D3A1A";
     if (answered) {
       if (option === q.answer) { bg = "rgba(0,137,123,0.12)"; border = "#00897B"; color = "#00897B"; }
       else if (option === selected) { bg = "rgba(194,24,91,0.10)"; border = "#C2185B"; color = "#C2185B"; }
     } else if (selected === option) {
       bg = theme.bg; border = theme.color; color = theme.color;
     }
-    return {
-      width: "100%", padding: "14px 18px", borderRadius: "12px",
-      border: `1.5px solid ${border}`, background: bg, color,
-      fontSize: "14px", fontWeight: 500, cursor: answered ? "default" : "pointer",
-      textAlign: "left", transition: "all 0.2s", fontFamily: "'DM Sans', sans-serif",
-    };
+    return { width: "100%", padding: "14px 18px", borderRadius: "12px", border: `1.5px solid ${border}`, background: bg, color, fontSize: "14px", fontWeight: 500, cursor: answered ? "default" : "pointer", textAlign: "left", transition: "all 0.2s", fontFamily: "'DM Sans', sans-serif" };
   };
 
   if (showResult) {
@@ -109,9 +324,7 @@ function Quiz({ theme }) {
     return (
       <div style={{ textAlign: "center", padding: "40px 20px" }}>
         <div style={{ fontSize: "64px", marginBottom: "16px" }}>{medal}</div>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "26px", fontWeight: 700, color: theme.color, marginBottom: "8px" }}>
-          Quiz Complete!
-        </h2>
+        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "26px", fontWeight: 700, color: theme.color, marginBottom: "8px" }}>Quiz Complete!</h2>
         <p style={{ fontSize: "15px", color: "#8B6452", marginBottom: "24px" }}>
           You scored <strong style={{ color: theme.color }}>{score}</strong> out of <strong>{QUIZ_QUESTIONS.length}</strong> ({pct}%)
         </p>
@@ -124,52 +337,34 @@ function Quiz({ theme }) {
 
   return (
     <div>
-      {/* Progress bar */}
       <div style={{ marginBottom: "28px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#8B6452", marginBottom: "8px" }}>
           <span>Question {current + 1} of {QUIZ_QUESTIONS.length}</span>
           <span>Score: <strong style={{ color: theme.color }}>{score}</strong></span>
         </div>
         <div style={{ height: "6px", borderRadius: "10px", background: "rgba(0,0,0,0.08)" }}>
-          <div style={{ height: "100%", borderRadius: "10px", background: theme.color, width: `${((current) / QUIZ_QUESTIONS.length) * 100}%`, transition: "width 0.4s ease" }} />
+          <div style={{ height: "100%", borderRadius: "10px", background: theme.color, width: `${(current / QUIZ_QUESTIONS.length) * 100}%`, transition: "width 0.4s ease" }} />
         </div>
       </div>
-
-      {/* Question */}
       <div style={{ background: "#fff", borderRadius: "18px", padding: "28px", border: `1.5px solid ${theme.color}20`, marginBottom: "20px" }}>
-        <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "19px", fontWeight: 700, color: "#3D1C00", lineHeight: 1.5 }}>
-          {q.question}
-        </h3>
+        <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "19px", fontWeight: 700, color: "#3D1C00", lineHeight: 1.5 }}>{q.question}</h3>
       </div>
-
-      {/* Options */}
       <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
         {q.options.map((option) => (
-          <button key={option} onClick={() => handleOption(option)} style={optionStyle(option)}>
-            {option}
-          </button>
+          <button key={option} onClick={() => handleOption(option)} style={optionStyle(option)}>{option}</button>
         ))}
       </div>
-
-      {/* Explanation */}
       {answered && (
         <div style={{ background: selected === q.answer ? "rgba(0,137,123,0.08)" : "rgba(194,24,91,0.08)", borderRadius: "12px", padding: "16px 18px", marginBottom: "20px", border: `1.5px solid ${selected === q.answer ? "#00897B" : "#C2185B"}30` }}>
           <p style={{ fontSize: "13px", color: "#5D3A1A", lineHeight: 1.6 }}>
-            <strong style={{ color: selected === q.answer ? "#00897B" : "#C2185B" }}>
-              {selected === q.answer ? "✓ Correct! " : "✗ Incorrect. "}
-            </strong>
+            <strong style={{ color: selected === q.answer ? "#00897B" : "#C2185B" }}>{selected === q.answer ? "✓ Correct! " : "✗ Incorrect. "}</strong>
             {q.explanation}
           </p>
         </div>
       )}
-
-      {/* Next button */}
       {answered && (
         <div style={{ textAlign: "right" }}>
-          <button
-            onClick={handleNext}
-            style={{ padding: "12px 28px", borderRadius: "24px", background: theme.color, color: "#fff", border: "none", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}
-          >
+          <button onClick={handleNext} style={{ padding: "12px 28px", borderRadius: "24px", background: theme.color, color: "#fff", border: "none", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>
             {current + 1 === QUIZ_QUESTIONS.length ? "See Results" : "Next →"}
           </button>
         </div>
@@ -186,9 +381,7 @@ function DanceGallery({ theme }) {
 
   const filtered = DANCE_FORMS.filter((d) => {
     const matchReg = selectedRegion === "All Regions" || d.region === selectedRegion;
-    const matchSearch =
-      d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      d.region.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchSearch = d.name.toLowerCase().includes(searchQuery.toLowerCase()) || d.region.toLowerCase().includes(searchQuery.toLowerCase());
     return matchReg && matchSearch;
   });
 
@@ -201,24 +394,15 @@ function DanceGallery({ theme }) {
   return (
     <div>
       <div style={{ marginBottom: "28px" }}>
-        <input
-          type="text"
-          placeholder="Search dance forms or regions..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ width: "100%", padding: "12px 16px", borderRadius: "12px", border: `1.5px solid ${theme.color}30`, fontSize: "14px", color: "#3D1C00", outline: "none", marginBottom: "16px", boxSizing: "border-box", fontFamily: "'DM Sans', sans-serif" }}
-        />
+        <input type="text" placeholder="Search dance forms or regions..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+          style={{ width: "100%", padding: "12px 16px", borderRadius: "12px", border: `1.5px solid ${theme.color}30`, fontSize: "14px", color: "#3D1C00", outline: "none", marginBottom: "16px", boxSizing: "border-box", fontFamily: "'DM Sans', sans-serif" }} />
         <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-          {REGIONS.map((r) => (
-            <button key={r} onClick={() => setSelectedRegion(r)} style={pillStyle(selectedRegion === r)}>{r}</button>
-          ))}
+          {REGIONS.map((r) => <button key={r} onClick={() => setSelectedRegion(r)} style={pillStyle(selectedRegion === r)}>{r}</button>)}
         </div>
       </div>
-
       <p style={{ fontSize: "13px", color: "#8B6452", marginBottom: "20px" }}>
         Showing <strong style={{ color: theme.color }}>{filtered.length}</strong> dance forms
       </p>
-
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "20px" }}>
         {filtered.map((dance) => (
           <div key={dance.id} onClick={() => setSelectedDance(dance)}
@@ -235,14 +419,12 @@ function DanceGallery({ theme }) {
           </div>
         ))}
       </div>
-
       {filtered.length === 0 && (
         <div style={{ textAlign: "center", padding: "60px 0", color: "#8B6452" }}>
           <div style={{ fontSize: "40px", marginBottom: "12px" }}>🔍</div>
           <p style={{ fontSize: "15px" }}>No dance forms match your search.</p>
         </div>
       )}
-
       {selectedDance && (
         <div onClick={() => setSelectedDance(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "24px" }}>
           <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: "24px", padding: "40px", maxWidth: "520px", width: "100%", position: "relative", overflow: "hidden", maxHeight: "90vh", overflowY: "auto" }}>
@@ -280,7 +462,6 @@ export default function FeaturePage() {
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Navbar />
-
       <div style={{ padding: "48px 48px 80px", maxWidth: "960px", margin: "0 auto", width: "100%" }}>
 
         {/* Breadcrumb */}
@@ -298,17 +479,17 @@ export default function FeaturePage() {
               {theme.icon}
             </div>
             <div>
-              <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "32px", fontWeight: 700, color: theme.color, marginBottom: "4px" }}>
-                {feature?.name}
-              </h1>
+              <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "32px", fontWeight: 700, color: theme.color, marginBottom: "4px" }}>{feature?.name}</h1>
               <p style={{ fontSize: "14px", color: "#8B6452" }}>NrityaNaad Feature Module</p>
             </div>
           </div>
           <p style={{ fontSize: "15px", color: "#5D3A1A", lineHeight: 1.7, fontWeight: 300 }}>
             {id === "gallery"
-              ? "Explore India's eight classical dance forms recognised by the Sangeet Natak Akademi — filter by region, search by name, and tap any card to learn about its history, key elements, and cultural roots."
+              ? "Explore India's eight classical dance forms — filter by region, search by name, and tap any card to learn about its history, key elements, and cultural roots."
               : id === "quiz"
               ? "Test your knowledge of Indian classical dance and music with 10 curated questions. Each question comes with an explanation to help you learn as you go."
+              : id === "karaoke"
+              ? "Sing along to classical Indian compositions. Select a song, press Sing Along, and follow the highlighted lyrics as they scroll in real time."
               : `This is your dedicated workspace for the ${feature?.name} module.`}
           </p>
         </div>
@@ -317,23 +498,21 @@ export default function FeaturePage() {
         <div style={{ borderRadius: "24px", padding: "36px 32px", border: `1.5px solid ${theme.color}20`, background: "#fafafa" }}>
           {id === "gallery" ? (
             <DanceGallery theme={theme} />
-          ) : id === "stories" ? (
-  <div style={{ borderRadius: "24px", padding: "60px 40px", border: `2px dashed ${theme.color}40`, background: theme.bg, textAlign: "center" }}>
-    <div style={{ fontSize: "48px", marginBottom: "16px" }}>📖</div>
-    <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "22px", fontWeight: 700, color: theme.color, marginBottom: "10px" }}>User Stories</h2>
-    <p style={{ fontSize: "14px", color: "#8B6452", fontWeight: 300 }}>Coming soon</p>
-  </div>
           ) : id === "quiz" ? (
             <Quiz theme={theme} />
+          ) : id === "karaoke" ? (
+            <Karaoke theme={theme} />
+          ) : id === "stories" ? (
+            <div style={{ borderRadius: "24px", padding: "60px 40px", border: `2px dashed ${theme.color}40`, background: theme.bg, textAlign: "center" }}>
+              <div style={{ fontSize: "48px", marginBottom: "16px" }}>📖</div>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "22px", fontWeight: 700, color: theme.color, marginBottom: "10px" }}>User Stories</h2>
+              <p style={{ fontSize: "14px", color: "#8B6452", fontWeight: 300 }}>Coming soon</p>
+            </div>
           ) : (
             <div style={{ borderRadius: "24px", padding: "60px 40px", border: `2px dashed ${theme.color}40`, background: theme.bg, textAlign: "center", position: "relative", overflow: "hidden" }}>
               <div style={{ fontSize: "48px", marginBottom: "16px" }}>🚀</div>
-              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "22px", fontWeight: 700, color: theme.color, marginBottom: "10px" }}>
-                Implementation Area
-              </h2>
-              <p style={{ fontSize: "14px", color: "#8B6452", fontWeight: 300 }}>
-                Drop your feature components and logic right here
-              </p>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "22px", fontWeight: 700, color: theme.color, marginBottom: "10px" }}>Implementation Area</h2>
+              <p style={{ fontSize: "14px", color: "#8B6452", fontWeight: 300 }}>Drop your feature components and logic right here</p>
             </div>
           )}
         </div>
